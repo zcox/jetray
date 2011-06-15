@@ -1,5 +1,7 @@
 # Example
 
+Jetray is basically just a .jar with some tools to make generating & sending email simple. Using sbt, we just need a Main class and a few .props files.
+
 projct/build/Project.scala - NOTE: until Jetray is available in a public repo, you'd need to publish-local jetray for this to work :(
 
 ``` scala
@@ -18,14 +20,14 @@ user=TheUsernameOrLeaveBlank
 password=ThePasswordOrLeaveBlank
 ```
 
-src/main/resources/controller.props
+src/main/resources/controller.props, frequency is emails/sec and count is the total number of emails you want sent.
 
 ```
 frequency=6
 count=18
 ```
 
-src/main/resources/akka.conf
+src/main/resources/akka.conf, this is optional but if you don't provide it you won't see any logging from your app.
 
 ```
 akka {
@@ -78,3 +80,8 @@ class Generator(from: String, to: String) extends Actor with MailSession {
   }
 }
 ```
+
+# License
+
+Jetray is licensed under the [Apache 2 License](http://www.apache.org/licenses/LICENSE-2.0.txt).
+
