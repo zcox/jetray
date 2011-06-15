@@ -6,6 +6,12 @@ Jetray provides some Scala tools to periodically generate & send emails via SMTP
 
 By using the [Typesafe stack](http://typesafe.com/stack) (specifically [Akka](http://akka.io/)), Jetray can generate & send email concurrently, a requirement for delivering multiple emails/sec.  Most Jetray components are actors, and you have full control over them.
 
+# Best Practices
+
+The more cores you have, the higher the rate of email you can send.
+
+Get Jetray as close to your mail server as possible. There's no need to test the global email network (hint: it works fine). You don't need to send email through [SendGrid](http://sendgrid.com). Run Jetray on the same network as your mail server and connect right to it via SMTP. This will greatly decrease the time it takes to send each email.
+
 # Future Work
 
 Jetray is pretty young (but functional) and here are some other things it may do someday:
