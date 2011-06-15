@@ -1,3 +1,19 @@
+# Overview
+
+Can your mail server handle 1000 incoming emails/min? To truly know the answer, you need to throw 1000 emails/min at your mail server.  Jetray can help you do that.
+
+Jetray provides some Scala tools to periodically generate & send emails via SMTP.  You tell Jetray how many emails/sec to send and provide an actor that creates emails using [JavaMail](http://www.oracle.com/technetwork/java/javamail/index.html), and Jetray does the rest.
+
+By using the [Typesafe stack](http://typesafe.com/stack) (specifically [Akka](http://akka.io/)), Jetray can generate & send email concurrently, a requirement for delivering multiple emails/sec.  Most Jetray components are actors, and you have full control over them.
+
+# Future Work
+
+Jetray is pretty young (but functional) and here are some other things it may do someday:
+
+ - Verify email was delivered (maybe using IMAP?)
+ - Collect statistics
+ - Distributed high-volume workloads across a cluster of Jetray servers
+
 # Example
 
 Jetray is basically just a .jar with some tools to make generating & sending email simple. Using sbt, we just need a Main class and a few .props files.
