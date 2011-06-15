@@ -1,6 +1,7 @@
 # Example
 
 projct/build/Project.scala - NOTE: until Jetray is available in a public repo, you'd need to publish-local jetray for this to work :(
+
 ``` scala
   val akkaRepo = "akka" at "http://akka.io/repository/"
   val javaNetRepo = "java.net" at "http://download.java.net/maven/2/"
@@ -9,6 +10,7 @@ projct/build/Project.scala - NOTE: until Jetray is available in a public repo, y
 ```
 
 src/main/resources/smtp.props
+
 ```
 host=yourdomain.com
 port=25
@@ -17,12 +19,14 @@ password=ThePasswordOrLeaveBlank
 ```
 
 src/main/resources/controller.props
+
 ```
 frequency=6
 count=18
 ```
 
 src/main/resources/akka.conf
+
 ```
 akka {
   event-handlers = ["akka.event.EventHandler$DefaultListener"]
@@ -31,6 +35,7 @@ akka {
 ```
 
 src/main/scala/Main.scala
+
 ``` scala
 import javax.mail._
 import javax.mail.Message.RecipientType._
