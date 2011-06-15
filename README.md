@@ -97,6 +97,47 @@ class Generator(from: String, to: String) extends Actor with MailSession {
 }
 ```
 
+Now just do ```sbt run``` and you should see output like this:
+
+```
+[info] == run ==
+[info] Running com.pongr.jetrayexample.Main 
+Loading config [akka.conf] from the application classpath.
+[DEBUG]   [6/15/11 2:54 PM] [run-main] [MailerActor] Connected Transport in 234 msec
+[DEBUG]   [6/15/11 2:54 PM] [run-main] [MailerActor] Connected Transport in 203 msec
+[DEBUG]   [6/15/11 2:54 PM] [run-main] [MailerActor] Connected Transport in 203 msec
+[DEBUG]   [6/15/11 2:54 PM] [run-main] [MailerActor] Connected Transport in 202 msec
+[DEBUG]   [6/15/11 2:54 PM] [run-main] [MailerActor] Connected Transport in 184 msec
+[DEBUG]   [6/15/11 2:54 PM] [run-main] [MailerActor] Connected Transport in 185 msec
+[DEBUG]   [6/15/11 2:54 PM] [akka:event-driven:dispatcher:global-11] [MailerActor] Sent message 39a882a3-68e5-45b9-bac8-60222d9693ac / 1 in 183 msec
+[DEBUG]   [6/15/11 2:55 PM] [akka:event-driven:dispatcher:global-16] [MailerActor] Sent message 39a882a3-68e5-45b9-bac8-60222d9693ac / 2 in 154 msec
+[DEBUG]   [6/15/11 2:55 PM] [akka:event-driven:dispatcher:global-23] [MailerActor] Sent message 39a882a3-68e5-45b9-bac8-60222d9693ac / 3 in 157 msec
+[DEBUG]   [6/15/11 2:55 PM] [akka:event-driven:dispatcher:global-8] [MailerActor] Sent message 39a882a3-68e5-45b9-bac8-60222d9693ac / 4 in 155 msec
+[DEBUG]   [6/15/11 2:55 PM] [akka:event-driven:dispatcher:global-15] [MailerActor] Sent message 39a882a3-68e5-45b9-bac8-60222d9693ac / 5 in 200 msec
+[DEBUG]   [6/15/11 2:55 PM] [akka:event-driven:dispatcher:global-16] [MailerActor] Sent message 39a882a3-68e5-45b9-bac8-60222d9693ac / 6 in 163 msec
+[DEBUG]   [6/15/11 2:55 PM] [akka:event-driven:dispatcher:global-9] [MailerActor] Sent message 39a882a3-68e5-45b9-bac8-60222d9693ac / 7 in 165 msec
+[DEBUG]   [6/15/11 2:55 PM] [akka:event-driven:dispatcher:global-8] [MailerActor] Sent message 39a882a3-68e5-45b9-bac8-60222d9693ac / 8 in 172 msec
+[DEBUG]   [6/15/11 2:55 PM] [akka:event-driven:dispatcher:global-19] [MailerActor] Sent message 39a882a3-68e5-45b9-bac8-60222d9693ac / 9 in 170 msec
+[DEBUG]   [6/15/11 2:55 PM] [akka:event-driven:dispatcher:global-14] [MailerActor] Sent message 39a882a3-68e5-45b9-bac8-60222d9693ac / 11 in 168 msec
+[DEBUG]   [6/15/11 2:55 PM] [akka:event-driven:dispatcher:global-23] [MailerActor] Sent message 39a882a3-68e5-45b9-bac8-60222d9693ac / 10 in 393 msec
+[DEBUG]   [6/15/11 2:55 PM] [akka:event-driven:dispatcher:global-20] [MailerActor] Sent message 39a882a3-68e5-45b9-bac8-60222d9693ac / 12 in 160 msec
+[DEBUG]   [6/15/11 2:55 PM] [akka:event-driven:dispatcher:global-25] [MailerActor] Sent message 39a882a3-68e5-45b9-bac8-60222d9693ac / 13 in 159 msec
+[DEBUG]   [6/15/11 2:55 PM] [akka:event-driven:dispatcher:global-12] [MailerActor] Sent message 39a882a3-68e5-45b9-bac8-60222d9693ac / 14 in 165 msec
+[DEBUG]   [6/15/11 2:55 PM] [akka:event-driven:dispatcher:global-14] [MailerActor] Sent message 39a882a3-68e5-45b9-bac8-60222d9693ac / 15 in 163 msec
+[DEBUG]   [6/15/11 2:55 PM] [akka:event-driven:dispatcher:global-16] [MailerActor] Sent message 39a882a3-68e5-45b9-bac8-60222d9693ac / 16 in 184 msec
+[DEBUG]   [6/15/11 2:55 PM] [akka:event-driven:dispatcher:global-12] [Controller] Sent 18 emails
+[DEBUG]   [6/15/11 2:55 PM] [akka:event-driven:dispatcher:global-12] [Controller] Sending PoisonPills to MailerActors...
+[DEBUG]   [6/15/11 2:55 PM] [akka:event-driven:dispatcher:global-25] [MailerActor] Sent message 39a882a3-68e5-45b9-bac8-60222d9693ac / 17 in 175 msec
+[DEBUG]   [6/15/11 2:55 PM] [akka:event-driven:dispatcher:global-12] [MailerActor] Sent message 39a882a3-68e5-45b9-bac8-60222d9693ac / 18 in 157 msec
+[DEBUG]   [6/15/11 2:55 PM] [akka:event-driven:dispatcher:global-23] [ReflectiveAccess$Remote$] java.lang.ClassNotFoundException: akka.remote.netty.NettyRemoteSupport
+[DEBUG]   [6/15/11 2:55 PM] [akka:event-driven:dispatcher:global-19] [MailerActor] Closed Transport in 37 msec
+[DEBUG]   [6/15/11 2:55 PM] [akka:event-driven:dispatcher:global-13] [MailerActor] Closed Transport in 37 msec
+[DEBUG]   [6/15/11 2:55 PM] [akka:event-driven:dispatcher:global-14] [MailerActor] Closed Transport in 38 msec
+[DEBUG]   [6/15/11 2:55 PM] [akka:event-driven:dispatcher:global-20] [MailerActor] Closed Transport in 42 msec
+[DEBUG]   [6/15/11 2:55 PM] [akka:event-driven:dispatcher:global-7] [MailerActor] Closed Transport in 40 msec
+[DEBUG]   [6/15/11 2:55 PM] [akka:event-driven:dispatcher:global-10] [MailerActor] Closed Transport in 286 msec
+```
+
 # License
 
 Jetray is licensed under the [Apache 2 License](http://www.apache.org/licenses/LICENSE-2.0.txt).
