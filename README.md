@@ -18,13 +18,13 @@ Jetray is pretty young (but functional) and here are some other things it may do
 
  - Verify email was delivered (maybe using IMAP?)
  - Collect statistics
- - Distributed high-volume workloads across a cluster of Jetray servers
+ - Distribute high-volume workloads across a cluster of Jetray servers
 
 # Example
 
 Jetray is basically just a .jar with some tools to make generating & sending email simple. Using sbt, we just need a Main class and a few .props files.
 
-projct/build/Project.scala - NOTE: until Jetray is available in a public repo, you'd need to publish-local jetray for this to work :(
+project/build/Project.scala - NOTE: until Jetray is available in a public repo, you'd need to publish-local jetray for this to work :(
 
 ``` scala
   val akkaRepo = "akka" at "http://akka.io/repository/"
@@ -49,7 +49,7 @@ frequency=6
 count=18
 ```
 
-src/main/resources/akka.conf, this is optional but if you don't provide it you won't see any logging from your app.
+src/main/resources/akka.conf, this is optional but if you don't provide it you won't see any logging from your app. You can, of course, use [SLF4J](http://akka.io/docs/akka/1.1.2/general/slf4j.html) if you wish.
 
 ```
 akka {
