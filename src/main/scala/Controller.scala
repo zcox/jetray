@@ -15,14 +15,15 @@
  */
 package com.pongr.jetray
 
-import akka.actor.{Actor, ActorRef, PoisonPill}
+import akka.actor.{ Actor, ActorRef, PoisonPill }
 import akka.actor.Actor.actorOf
 import akka.actor.Scheduler.scheduleOnce
 import akka.event.EventHandler
 import java.util.concurrent.TimeUnit.{ MILLISECONDS, SECONDS }
-import java.util.{Properties, UUID}
+import java.util.{ Properties, UUID }
 import scala.math.round
 import javax.mail.Message
+import java.io.{ File, FileInputStream }
 
 /** Specifies the rate at which emails should be sent and how many emails to send.
  *  The companion object provides convenience methods for creating instances.
@@ -32,29 +33,21 @@ import javax.mail.Message
  *  @param count Total number of emails to send.
  *  @param time Total length of time (in milliseconds) to send email.
  */
-case class ControllerParams(frequency: Int, period: Long, count: Int, time: Long)
+case class Section(frequency: Int, period: Long, count: Int, time: Long)
+case class ControllerParams(sections: List[Section])
 
 /** Factory for [[com.pongr.jetray.ControllerParams]] instances. */
-object ControllerParams {
-  /** Reads params from the specified resource file. Uses getClass.getResourceAsStream
-   *  to read the file. The file should contain these properties (others will be supported in the future):
-   *  {{{
-   *  frequency=6
-   *  count=18
-   *  }}}
-   */
-  def fromResource(name: String = "/controller.props") = {
-    val props = new Properties()
-    val stream = getClass.getResourceAsStream(name)
-    if (stream == null)
-      throw new IllegalArgumentException("Resource " + name + " not found")
-    props.load(stream)
-    
-    val frequency = Integer.parseInt(props.getProperty("frequency"))
+object ControllerParams extends FromProperties[ControllerParams] {
+  /** Reads params from the specified Properties object. */
+  def fromProperties(props: Properties) = {
+    /*val frequency = Integer.parseInt(props.getProperty("frequency"))
     val period = round(1000d / frequency)
     val count = Integer.parseInt(props.getProperty("count"))
     val time = count * period
-    ControllerParams(frequency, period, count, time)
+    ControllerParams(frequency, period, count, time)*/
+    val periods = props.getProperty("period") split "," map { _.toLong }
+    val counts = props.getProperty("count") split "," map { _.toInt }
+    ControllerParams(periods zip counts map { case (p, c) => Section(round(1000f / p), p, c, c * p) } toList)
   }
 }
 
@@ -65,28 +58,38 @@ case object Tick
 case class Generate(runId: UUID, emailId: Long)
 
 /** Controls the periodic generation of emails. */
-class Controller(params: ControllerParams, generator: ActorRef, mailer: ActorRef) extends Actor {
-  val runId = UUID.randomUUID
+class Controller(params: ControllerParams, generator: ActorRef, mailer: ActorRef, runId: UUID = UUID.randomUUID) extends Actor {
+  //val runId = UUID.randomUUID
   var sent = 0l
+  var id = 0l
+  var (section :: sections) = params.sections
   val poisonDelay = 1000l
 
   def receive = {
     case Tick =>
       sent += 1
-      generator ! Generate(runId, sent)
-      
-      if (sent < params.count)
-        scheduleOnce(self, Tick, params.period, MILLISECONDS)
+      id += 1
+      generator ! Generate(runId, id)
+
+      if (sent < section.count)
+        scheduleOnce(self, Tick, section.period, MILLISECONDS)
+      else if (sections.nonEmpty) {
+        val period = section.period
+        section = sections.head
+        sections = sections.tail
+        EventHandler.debug(this, "Sent " + sent + " emails, moving to next section: " + section)
+        sent = 0
+        scheduleOnce(self, Tick, period, MILLISECONDS)
+      }
       else {
         EventHandler.debug(this, "Sent " + sent + " emails")
-        
+
         //TODO should we even do this?
         scheduleOnce(self, PoisonPill, poisonDelay, MILLISECONDS)
-        EventHandler.debug(this, "Sending PoisonPills to MailerActors...")
+        EventHandler.info(this, "Sending PoisonPills to MailerActors...")
         for (mailer <- Actor.registry.actorsFor[MailerActor])
           scheduleOnce(mailer, PoisonPill, poisonDelay, MILLISECONDS)
       }
-    case msg: Message => 
-      mailer ! msg
+    case s: Send => mailer forward s
   }
 }

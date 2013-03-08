@@ -23,8 +23,8 @@ import akka.routing.Routing.loadBalancerActor
 object Actors {
   /** Returns a load balancer actor that balances across the specified number of actors returned by the specified function.
    *  @param count number of actors to balance load across.
-   *  @param newActor function that returns a new actor on each invocation.
+   *  @param newActor function that returns a new actor for the specified index on each invocation.
    */
-  def loadBalance(count: Int, newActor: => ActorRef): ActorRef =
-    loadBalancerActor(new CyclicIterator((for (i <- 1 to count) yield newActor).toList))
+  def loadBalance(count: Int, newActor: Int => ActorRef): ActorRef =
+    loadBalancerActor(new CyclicIterator((for (i <- 0 to (count-1)) yield newActor(i)).toList))
 }

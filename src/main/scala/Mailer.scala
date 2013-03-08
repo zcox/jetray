@@ -18,7 +18,8 @@ package com.pongr.jetray
 import javax.mail.{ Session, Transport, Message }
 import akka.actor.Actor
 import akka.event.EventHandler
-import java.util.Properties
+import akka.routing.Listeners
+import java.util.{ UUID, Properties, Date }
 
 trait MailSession {
   val smtpProtocol = "smtp"
@@ -35,40 +36,55 @@ trait MailSession {
 }
 
 //TODO doc
-case class SmtpParams(host: String, port: Int, user: String, password: String)
+case class SmtpParams(hosts: List[String], port: Int, user: String, password: String, connections: Option[Int])
 
-case object SmtpParams {
-  def fromResource(name: String = "/smtp.props") = {
-    val props = new Properties()
-    val stream = getClass.getResourceAsStream(name)
-    if (stream == null)
-      throw new IllegalArgumentException("Resource " + name + " not found")
-    props.load(stream)
-    
+object SmtpParams extends FromProperties[SmtpParams] {
+  def fromProperties(props: Properties) =
     SmtpParams(
-      props.getProperty("host"),
+      props.getProperty("host") split "," toList,
       Integer.parseInt(props.getProperty("port")),
       props.getProperty("user"),
-      props.getProperty("password"))
-  }
+      props.getProperty("password"),
+      option(props.getProperty("connections")) map { _.toInt })
 }
 
+/** Send the specified message for the specified runId and emailId. */
+case class Send(runId: UUID, emailId: Long, message: Message)
+
 //TODO doc
-class MailerActor(params: SmtpParams) extends Actor with MailSession {
+class MailerActor(host: String, port: Int, user: String, password: String) extends Actor with MailSession with Listeners {
   var transport: Transport = _
 
-  override def preStart() = time("Connected Transport in %d msec" format _) {
-    transport = session.getTransport(smtpProtocol)
-    transport.connect(params.host, params.port, params.user, params.password)
+  def newTransport() = time("Connected Transport to %s:%d in %d msec".format(host, port, _)) {
+    val t = session.getTransport(smtpProtocol)
+    t.connect(host, port, user, password)
+    t
+  }
+
+  override def preStart() = {
+    transport = newTransport()
   }
 
   override def postStop() = time("Closed Transport in %d msec" format _) {
     transport.close()
   }
 
-  def receive = {
-    case message: Message => time("Sent message %s in %d msec".format(message.getSubject, _)) {
-      transport.sendMessage(message, message.getAllRecipients)
+  def receive = listenerManagement orElse {
+    case Send(runId, emailId, message) => time("Sent message %s to %s in %d msec".format(message.getSubject, host, _)) {
+      val preSend = new Date
+      
+      //mail.pepsico.com will close connections after 100 sent emails, so just open a new connection if that happens
+      try {
+        transport.sendMessage(message, message.getAllRecipients)
+      } catch {
+        case e: com.sun.mail.smtp.SMTPSendFailedException =>
+          EventHandler.info(this, "Caught SMTPSendFailedException, opening new connection: " + e.getMessage)
+          transport = newTransport()
+          transport.sendMessage(message, message.getAllRecipients)
+      }
+      
+      val postSend = new Date
+      for (publisher <- Actor.registry.actorFor[Publisher]) publisher ! Sent(runId, emailId, message, message.getSentDate, preSend, postSend)
     }
   }
 
@@ -76,7 +92,7 @@ class MailerActor(params: SmtpParams) extends Actor with MailSession {
     val t1 = System.currentTimeMillis
     val a = f
     val t2 = System.currentTimeMillis
-    EventHandler.debug(this, log(t2 - t1))
+    EventHandler.info(this, log(t2 - t1))
     a
   }
 }
