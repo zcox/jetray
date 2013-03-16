@@ -1,3 +1,7 @@
+# This project has moved
+
+This project has been rewritten and moved to [https://github.com/pongr/jetray](https://github.com/pongr/jetray).
+
 # Overview
 
 Can your mail server handle 1000 incoming emails/min? To truly know the answer, you need to throw 1000 emails/min at your mail server.  Jetray can help you do that.
